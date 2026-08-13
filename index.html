@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WAKS_GT — Watermelon Chill & Blueberry Blast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0b0b0c;
+    --ink-2:#151517;
+    --bone:#f3f1ec;
+    --bone-dim:#c9c6bd;
+    --melon:#ff5c7a;
+    --melon-dim:#4a1520;
+    --blueb:#5b6ef5;
+    --blueb-dim:#151a4a;
+    --gray:#8a8a8e;
+    --radius:2px;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--bone);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img{max-width:100%; display:block;}
+  a{color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+  ::selection{background:var(--melon); color:var(--ink);}
+
+  .display{font-family:'Anton',sans-serif; letter-spacing:0.01em; text-transform:uppercase;}
+  .marker{font-family:'Permanent Marker',cursive; text-transform:lowercase;}
+
+  /* ---------- Age gate ---------- */
+  #agegate{
+    position:fixed; inset:0; z-index:200;
+    background:var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:28px; text-align:center; padding:24px;
+  }
+  #agegate.hidden{display:none;}
+  #agegate img{width:88px; height:88px; border-radius:50%; margin-bottom:8px;}
+  #agegate h1{font-size:clamp(28px,6vw,44px);}
+  #agegate p{color:var(--gray); max-width:420px; font-size:15px; line-height:1.6;}
+  .gate-btns{display:flex; gap:16px; margin-top:8px;}
+  .gate-btns button{
+    padding:14px 32px; border:2px solid var(--bone); background:none; color:var(--bone);
+    font-weight:700; letter-spacing:0.04em; text-transform:uppercase; font-size:14px;
+    transition:transform .15s ease, background .15s ease, color .15s ease;
+  }
+  .gate-btns button:hover{background:var(--bone); color:var(--ink); transform:translateY(-2px);}
+  .gate-btns button:focus-visible{outline:3px solid var(--melon); outline-offset:3px;}
+  #gate-no-msg{display:none; color:var(--melon); font-size:14px; margin-top:4px;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 5%;
+    background:rgba(11,11,12,0); transition:background .25s ease, border-color .25s ease;
+    border-bottom:1px solid transparent;
+  }
+  header.scrolled{background:rgba(11,11,12,0.92); backdrop-filter:blur(8px); border-color:#242426;}
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand img{width:36px; height:36px; border-radius:50%;}
+  .brand span{font-size:19px; letter-spacing:0.02em;}
+  nav{display:flex; align-items:center; gap:28px;}
+  nav a{font-size:13px; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; color:var(--bone-dim); text-decoration:none;}
+  nav a:hover{color:var(--bone);}
+  #cart-toggle{
+    display:flex; align-items:center; gap:8px; background:none; border:1.5px solid var(--bone-dim); color:var(--bone);
+    padding:9px 16px; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;
+  }
+  #cart-toggle:hover{border-color:var(--bone);}
+  #cart-count{background:var(--melon); color:var(--ink); border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    overflow:hidden; padding:120px 24px 80px;
+  }
+  .hero-half{position:absolute; inset:0; width:50%;}
+  .hero-half.left{
+    left:0; background:radial-gradient(circle at 80% 50%, var(--melon-dim), var(--ink) 70%);
+    clip-path:polygon(0 0, 100% 0, 82% 100%, 0% 100%);
+  }
+  .hero-half.right{
+    right:0; background:radial-gradient(circle at 20% 50%, var(--blueb-dim), var(--ink) 70%);
+    clip-path:polygon(18% 0, 100% 0, 100% 100%, 0% 100%);
+  }
+  .hero-content{position:relative; z-index:2; text-align:center; display:flex; flex-direction:column; align-items:center; gap:22px;}
+  .hero-logo{
+    width:clamp(150px,22vw,220px); height:clamp(150px,22vw,220px); border-radius:50%;
+    box-shadow:0 0 0 6px var(--ink), 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .hero h1{font-size:clamp(40px,9vw,96px); line-height:0.95;}
+  .hero h1 .accent-melon{color:var(--melon);}
+  .hero h1 .accent-blueb{color:var(--blueb);}
+  .hero .marker{font-size:clamp(17px,2.4vw,22px); color:var(--bone-dim);}
+  .hero-cta{
+    margin-top:12px; padding:16px 40px; background:var(--bone); color:var(--ink); border:none;
+    font-weight:800; text-transform:uppercase; letter-spacing:0.06em; font-size:14px;
+    transition:transform .15s ease;
+  }
+  .hero-cta:hover{transform:translateY(-3px);}
+  .hero-cta:focus-visible{outline:3px solid var(--melon); outline-offset:3px;}
+  .scroll-hint{position:absolute; bottom:28px; left:50%; transform:translateX(-50%); font-size:12px; color:var(--gray); letter-spacing:0.1em; text-transform:uppercase;}
+
+  /* ---------- Products ---------- */
+  .section{padding:100px 6% 60px; max-width:1180px; margin:0 auto;}
+  .section-head{margin-bottom:48px;}
+  .eyebrow{font-size:13px; letter-spacing:0.15em; text-transform:uppercase; color:var(--gray); font-weight:700; margin-bottom:10px;}
+  .section-head h2{font-size:clamp(32px,5vw,52px);}
+
+  .products{display:grid; grid-template-columns:1fr 1fr; gap:28px;}
+  @media (max-width:760px){.products{grid-template-columns:1fr;}}
+
+  .card{
+    position:relative; border:1.5px solid #232325; padding:36px 30px 30px;
+    display:flex; flex-direction:column; gap:18px; overflow:hidden;
+    transition:border-color .2s ease;
+    --card-accent:#8a8a8e;
+  }
+  .card:hover{border-color:var(--card-accent);}
+
+  .card-image{
+    width:100%; aspect-ratio:4/3; border:1px solid #232325; overflow:hidden;
+    background:#1a1a1c; display:flex; align-items:center; justify-content:center;
+  }
+  .card-image img{
+    width:100%; height:100%; object-fit:cover; object-position:center;
+    filter:grayscale(0.15) contrast(1.05);
+    transition:transform .3s ease, filter .3s ease;
+  }
+  .card:hover .card-image img{transform:scale(1.04); filter:grayscale(0) contrast(1.1);}
+
+  .puff{
+    width:96px; height:96px; border-radius:50%; align-self:flex-start;
+    background:radial-gradient(circle at 32% 30%, var(--card-accent), transparent 60%),
+               radial-gradient(circle at 65% 60%, var(--card-accent), transparent 55%);
+    filter:blur(0.5px); opacity:0.9; position:relative;
+  }
+  .puff::after{
+    content:'✚'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:28px; color:var(--ink); font-weight:900;
+  }
+
+  .card h3{font-size:28px;}
+  .card .flavor-tag{font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--card-accent); font-weight:800;}
+  .specs{list-style:none; display:flex; flex-direction:column; gap:6px; font-size:14px; color:var(--bone-dim);}
+  .specs li{display:flex; align-items:center; gap:8px;}
+  .specs li::before{content:'✚'; color:var(--card-accent); font-size:12px;}
+
+  .card-footer{margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding-top:14px; border-top:1px solid #232325;}
+  .price{font-size:24px; font-weight:800;}
+  .add-btn{
+    background:var(--card-accent); color:var(--ink); border:none; padding:12px 22px;
+    font-weight:800; text-transform:uppercase; font-size:13px; letter-spacing:0.05em;
+    transition:transform .15s ease, filter .15s ease;
+  }
+  .add-btn:hover{filter:brightness(1.1); transform:translateY(-2px);}
+  .add-btn:focus-visible{outline:3px solid var(--bone); outline-offset:3px;}
+
+  /* ---------- Info strip ---------- */
+  .strip{border-top:1px solid #232325; border-bottom:1px solid #232325; padding:36px 6%; display:flex; flex-wrap:wrap; gap:32px; justify-content:space-between; max-width:1180px; margin:20px auto 0;}
+  .strip-item{flex:1; min-width:180px;}
+  .strip-item h4{font-size:13px; text-transform:uppercase; letter-spacing:0.08em; color:var(--gray); margin-bottom:6px;}
+  .strip-item p{font-size:15px; color:var(--bone-dim);}
+
+  /* ---------- Footer ---------- */
+  footer{padding:60px 6% 40px; max-width:1180px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:space-between; gap:24px; align-items:flex-end;}
+  footer .brand span{font-size:22px;}
+  .footer-links{display:flex; gap:24px; flex-wrap:wrap;}
+  .footer-links a{font-size:13px; text-decoration:none; color:var(--bone-dim); text-transform:uppercase; letter-spacing:0.05em;}
+  .footer-links a:hover{color:var(--bone);}
+  .disclaimer{width:100%; margin-top:24px; padding-top:24px; border-top:1px solid #232325; font-size:12px; color:var(--gray); line-height:1.6;}
+
+  /* ---------- Cart drawer ---------- */
+  #overlay{position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:150; opacity:0; pointer-events:none; transition:opacity .25s ease;}
+  #overlay.open{opacity:1; pointer-events:auto;}
+  #cart{
+    position:fixed; top:0; right:0; bottom:0; width:min(400px,92vw); background:var(--ink-2); z-index:160;
+    transform:translateX(100%); transition:transform .3s ease; display:flex; flex-direction:column;
+    border-left:1px solid #2a2a2c;
+  }
+  #cart.open{transform:translateX(0);}
+  .cart-head{padding:24px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #2a2a2c;}
+  .cart-head h3{font-size:20px;}
+  #cart-close{background:none; border:none; color:var(--bone); font-size:22px; line-height:1;}
+  #cart-items{flex:1; overflow-y:auto; padding:12px 24px; display:flex; flex-direction:column; gap:16px;}
+  .cart-empty{color:var(--gray); font-size:14px; text-align:center; margin-top:40px;}
+  .cart-row{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #232325;}
+  .cart-row-info{display:flex; flex-direction:column; gap:2px;}
+  .cart-row-info strong{font-size:14px;}
+  .cart-row-info span{font-size:12px; color:var(--gray);}
+  .qty-ctrl{display:flex; align-items:center; gap:10px;}
+  .qty-ctrl button{background:none; border:1px solid var(--bone-dim); color:var(--bone); width:26px; height:26px; font-size:14px; font-weight:700;}
+  .qty-ctrl button:hover{border-color:var(--bone);}
+  .cart-foot{padding:24px; border-top:1px solid #2a2a2c; display:flex; flex-direction:column; gap:14px;}
+  .cart-total{display:flex; justify-content:space-between; font-size:16px; font-weight:800;}
+  #checkout-btn{
+    background:#25D366; color:#06210f; border:none; padding:15px; font-weight:800;
+    text-transform:uppercase; letter-spacing:0.05em; font-size:14px; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  #checkout-btn:disabled{opacity:0.4; cursor:not-allowed;}
+  #checkout-btn:not(:disabled):hover{filter:brightness(1.08);}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; scroll-behavior:auto !important;}
+  }
+
+  /* ---------- Mobile tweaks ---------- */
+  @media (max-width:600px){
+    header{padding:14px 5%;}
+    .brand span{font-size:15px;}
+    .brand img{width:28px; height:28px;}
+    nav{gap:14px;}
+    nav a{display:none;} /* on phones, keep header to logo + cart only */
+    #cart-toggle{padding:8px 12px; font-size:12px;}
+    .hero{padding:100px 20px 70px;}
+    .hero-cta{padding:14px 30px; font-size:13px;}
+    .section{padding:70px 6% 40px;}
+    .card{padding:24px 20px 20px;}
+    .card-footer{flex-wrap:wrap; gap:12px;}
+    .add-btn{width:100%;}
+    footer{padding:50px 6% 30px;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- Age verification -->
+  <div id="agegate">
+    <img src="Waks_logo.jpeg" alt="Waks_gt">
+    <h1 class="display">¿Sos mayor de 18 años?</h1>
+    <p>Este sitio vende productos con nicotina. El acceso está restringido a personas mayores de edad.</p>
+    <div class="gate-btns">
+      <button id="gate-yes">Sí, soy mayor</button>
+      <button id="gate-no">No</button>
+    </div>
+    <p id="gate-no-msg">Este sitio es solo para mayores de 18 años.</p>
+  </div>
+
+  <!-- Header -->
+  <header id="site-header">
+    <div class="brand">
+      <img src="Waks_logo.jpeg" alt="Waks_gt logo">
+      <span class="display">waks_gt</span>
+    </div>
+    <nav>
+      <a href="#productos">Catálogo</a>
+      <a href="#contacto">Contacto</a>
+      <button id="cart-toggle" aria-label="Abrir carrito">
+        🛒 <span id="cart-count">0</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-half left"></div>
+    <div class="hero-half right"></div>
+    <div class="hero-content">
+      <img class="hero-logo" src="Waks_logo.jpeg" alt="Waks_gt">
+      <h1 class="display"><span class="accent-melon">Chill.</span> <span class="accent-blueb">Blast.</span></h1>
+      <p class="marker">dos sabores, una nube.</p>
+      <a href="#productos" class="hero-cta">Ver catálogo</a>
+    </div>
+    <div class="scroll-hint">Desplazate ↓</div>
+  </section>
+
+  <!-- Products -->
+  <section class="section" id="productos">
+    <div class="section-head">
+      <div class="eyebrow">Catálogo</div>
+      <h2 class="display">Elegí tu sabor</h2>
+    </div>
+    <div class="products" id="products-grid">
+      <!-- Las tarjetas de producto se generan automáticamente desde products.js -->
+    </div>
+  </section>
+
+  <!-- Info strip -->
+  <div class="strip">
+    <div class="strip-item">
+      <h4>Entrega</h4>
+      <p>Coordinamos por WhatsApp según tu zona.</p>
+    </div>
+    <div class="strip-item">
+      <h4>Pago</h4>
+      <p>Depósito, transferencia o contra entrega.</p>
+    </div>
+    <div class="strip-item">
+      <h4>Edad mínima</h4>
+      <p>Venta exclusiva para mayores de 18 años.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer id="contacto">
+    <div class="brand">
+      <img src="Waks_logo.jpeg" alt="Waks_gt logo" style="width:44px;height:44px;">
+      <span class="display">waks_gt</span>
+    </div>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/waks_gt?igsh=MTN6Y3p3Y3lsbW12" target="_blank" rel="noopener">Instagram</a>
+      <a href="#" id="footer-whatsapp">WhatsApp</a>
+    </div>
+    <p class="disclaimer">waks_gt © 2026. Producto con nicotina — sustancia adictiva. Venta prohibida a menores de 18 años. Comprá responsablemente.</p>
+  </footer>
+
+  <!-- Cart -->
+  <div id="overlay"></div>
+  <aside id="cart" aria-label="Carrito de compras">
+    <div class="cart-head">
+      <h3 class="display">Tu carrito</h3>
+      <button id="cart-close" aria-label="Cerrar carrito">✕</button>
+    </div>
+    <div id="cart-items"><p class="cart-empty">Tu carrito está vacío.</p></div>
+    <div class="cart-foot">
+      <div class="cart-total"><span>Total</span><span id="cart-total-amount">Q0</span></div>
+      <button id="checkout-btn" disabled>Enviar pedido por WhatsApp</button>
+    </div>
+  </aside>
+
+  <script src="products.js"></script>
+<script>
+    // ===== CONFIG: reemplazá con tu número real (código de país + número, sin +) =====
+    const WHATSAPP_NUMBER = "50240644382";
+
+    // ---------- Age gate ----------
+    const gate = document.getElementById('agegate');
+    document.getElementById('gate-yes').addEventListener('click', () => {
+      gate.classList.add('hidden');
+    });
+    document.getElementById('gate-no').addEventListener('click', () => {
+      document.getElementById('gate-no-msg').style.display = 'block';
+    });
+
+    // ---------- Header scroll state ----------
+    const header = document.getElementById('site-header');
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // ---------- Render products from products.js ----------
+    function renderProducts(){
+      const grid = document.getElementById('products-grid');
+      grid.innerHTML = PRODUCTS.filter(p => p.active).map(p => `
+        <article class="card" style="--card-accent:${p.accent}">
+          <div class="card-image"><img src="${p.image}" alt="${p.name}, ${p.specs.join(', ')}"></div>
+          <div>
+            <div class="flavor-tag">${p.tag}</div>
+            <h3 class="display">${p.name}</h3>
+          </div>
+          <ul class="specs">
+            ${p.specs.map(s => `<li>${s}</li>`).join('')}
+          </ul>
+          <div class="card-footer">
+            <span class="price">Q${p.price}</span>
+            <button class="add-btn" data-name="${p.name}" data-price="${p.price}">Agregar</button>
+          </div>
+        </article>
+      `).join('');
+    }
+    renderProducts();
+
+    // ---------- Cart logic ----------
+    let cart = []; // {name, price, qty}
+
+    const cartEl = document.getElementById('cart');
+    const overlay = document.getElementById('overlay');
+    const cartItemsEl = document.getElementById('cart-items');
+    const cartCountEl = document.getElementById('cart-count');
+    const cartTotalEl = document.getElementById('cart-total-amount');
+    const checkoutBtn = document.getElementById('checkout-btn');
+
+    function openCart(){ cartEl.classList.add('open'); overlay.classList.add('open'); }
+    function closeCart(){ cartEl.classList.remove('open'); overlay.classList.remove('open'); }
+
+    document.getElementById('cart-toggle').addEventListener('click', openCart);
+    document.getElementById('cart-close').addEventListener('click', closeCart);
+    overlay.addEventListener('click', closeCart);
+
+    // Delegación de eventos: como las tarjetas se crean dinámicamente,
+    // escuchamos en el contenedor padre en vez de en cada botón individual.
+    document.getElementById('products-grid').addEventListener('click', (e) => {
+      const btn = e.target.closest('.add-btn');
+      if (!btn) return;
+      const name = btn.dataset.name;
+      const price = Number(btn.dataset.price);
+      const existing = cart.find(i => i.name === name);
+      if (existing) existing.qty += 1;
+      else cart.push({name, price, qty: 1});
+      renderCart();
+      openCart();
+    });
+
+    function changeQty(name, delta){
+      const item = cart.find(i => i.name === name);
+      if(!item) return;
+      item.qty += delta;
+      if(item.qty <= 0) cart = cart.filter(i => i.name !== name);
+      renderCart();
+    }
+
+    function renderCart(){
+      const totalQty = cart.reduce((s,i) => s + i.qty, 0);
+      const totalAmount = cart.reduce((s,i) => s + i.qty * i.price, 0);
+      cartCountEl.textContent = totalQty;
+      cartTotalEl.textContent = 'Q' + totalAmount;
+      checkoutBtn.disabled = cart.length === 0;
+
+      if(cart.length === 0){
+        cartItemsEl.innerHTML = '<p class="cart-empty">Tu carrito está vacío.</p>';
+        return;
+      }
+
+      cartItemsEl.innerHTML = cart.map(item => `
+        <div class="cart-row">
+          <div class="cart-row-info">
+            <strong>${item.name}</strong>
+            <span>Q${item.price} c/u</span>
+          </div>
+          <div class="qty-ctrl">
+            <button aria-label="Restar" data-action="minus" data-name="${item.name}">−</button>
+            <span>${item.qty}</span>
+            <button aria-label="Sumar" data-action="plus" data-name="${item.name}">+</button>
+          </div>
+        </div>
+      `).join('');
+
+      cartItemsEl.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const delta = btn.dataset.action === 'plus' ? 1 : -1;
+          changeQty(btn.dataset.name, delta);
+        });
+      });
+    }
+
+    function buildWhatsappMessage(){
+      let lines = ['Hola! Quiero hacer este pedido en Waks_gt:', ''];
+      cart.forEach(i => lines.push(`• ${i.qty}x ${i.name} — Q${i.qty * i.price}`));
+      const total = cart.reduce((s,i) => s + i.qty * i.price, 0);
+      lines.push('', `Total: Q${total}`);
+      return encodeURIComponent(lines.join('\n'));
+    }
+
+    checkoutBtn.addEventListener('click', () => {
+      if(cart.length === 0) return;
+      const msg = buildWhatsappMessage();
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+    });
+
+    document.getElementById('footer-whatsapp').addEventListener('click', (e) => {
+      e.preventDefault();
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}`, '_blank');
+    });
+
+    renderCart();
+
+    // ---------- Smooth scroll without native hash navigation ----------
+    // (avoids the file:// "unsafe URL" warning some browsers show for local testing)
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const targetId = link.getAttribute('href').slice(1);
+        const targetEl = document.getElementById(targetId);
+        if (targetEl){
+          e.preventDefault();
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
