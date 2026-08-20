@@ -41,4 +41,26 @@ const PRODUCTS = [
     accent: "#5b6ef5",
     active: true
   }
+  ,
+  {
+    id: "fresh-mint",
+    name: "Fresh Mint",
+    tag: "Cool",
+    image: "Fresh_Mint.jpeg",
+    specs: ["3500 puffs", "5% nicotina", "Sabor menta fresca"],
+    price: 100,
+    accent: "#2dd4bf",
+    active: true
+  },
+  {
+    id: "dark-cherry",
+    name: "Dark Cherry",
+    tag: "Profundo",
+    image: "Dark_Cherry.jpeg",
+    specs: ["3500 puffs", "5% nicotina", "Sabor cereza oscura"],
+    price: 100,
+    accent: "#a3123a",
+    active: true
+  }
 ];
+
